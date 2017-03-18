@@ -14,7 +14,7 @@ setup(
     name='googleAuth',
     version=googleAuth.__version__,
     #packages=find_packages(),
-    packages=['googleAuth'], 
+    packages=['googleAuth', 'googleAuth.migrations], 
     include_package_data=True,
     install_requires=[
         'google-api-python-client'

@@ -28,6 +28,7 @@ class GoogleUserProfiles(models.Model):
 
     class Meta:
         db_table = 'GoogleUserProfiles'
-        verbose_name = 'Google User Profile'
-        verbose_name_plural = 'Google User Profiles'
+        verbose_name = 'Google user profile'
+        verbose_name_plural = 'Google user profiles'
+
 

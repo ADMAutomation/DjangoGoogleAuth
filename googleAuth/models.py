@@ -20,3 +20,14 @@ class GoogleAuthCodes(models.Model):
         unique_together = (
             ('user', 'code'),
         )
+
+
+class GoogleUserProfiles(models.Model):
+    user = models.OneToOneField(User)
+    imageUrl = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        db_table = 'GoogleUserProfiles'
+        verbose_name = 'Google User Profile'
+        verbose_name_plural = 'Google User Profiles'
+

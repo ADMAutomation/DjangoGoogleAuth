@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from oauth2client import client, crypt
 from rest_framework_jwt.settings import api_settings
+from .models import GoogleUserProfiles as UserProfiles
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -77,3 +78,18 @@ def createUserFromGoogleCredentials(credentials):
 def getUserJWTToken(current_user):
     new_payload = jwt_payload_handler(current_user)
     return jwt_encode_handler(new_payload)
+
+
+def getUserProfile(user):
+    try:
+        profile = UserProfiles.objects.get(user=user)
+    except:
+        profile = UserProfiles(user=user)
+        profile.save()
+    return profile
+
+def updateUserImageUrl(user, url):
+    profile = getUserProfile(user)
+    profile.imageUrl = url
+    profile.save()
+

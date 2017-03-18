@@ -5,6 +5,17 @@ from django.shortcuts import render
 
 from django.http import HttpResponseForbidden
 
+from rest_framework import viewsets, status
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+
+from .permissions import IsAnonymous
+from .serializers import GoogleTokenSerializer
+from .utils import getUserJWTToken, getIdInfoFromRawIdToken, getUserFromIdInfo
+from .models import GoogleCredentials
+from .utils import updateUserImageUrl
+
+
 class GoToGoogleLoginPage(RedirectView):
     permanent = False
     url = ''
@@ -28,4 +39,29 @@ class AfterGoogleLoginPage(View):
         if current_user is None:
             return HttpResponseForbidden()
         return render(request, 'googleAuth/stepTwoPopup.html', context={'new_token': getUserJWTToken(current_user)})
+
+
+class GoogleTokenToDjangoTokenViewSet(viewsets.GenericViewSet):
+    queryset = GoogleCredentials.objects.filter(id=-1)
+    serializer_class = GoogleTokenSerializer
+    permission_classes = (IsAnonymous,)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        idinfo = getIdInfoFromRawIdToken(serializer.data['token'])
+        if idinfo is None:
+            raise ValidationError({'token': 'not a valid token'})
+        u = getUserFromIdInfo(idinfo)
+        token = None
+        if u is None:
+            raise ValidationError({'token': 'not a valid token'})
+        else:
+            token = getUserJWTToken(u)
+        updateUserImageUrl(u, idinfo['picture'])
+        serializer = self.get_serializer(data={'token': token})
+        serializer.is_valid(raise_exception=True)
+
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 

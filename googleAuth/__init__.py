@@ -1,5 +1,5 @@
 __title__ = 'Django ADM API Google Auth'
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 __author__ = 'Alfredo Di Maria'
 __license__ = 'GPL 3'
 __copyright__ = 'Copyright 2017 ADM Automation'
